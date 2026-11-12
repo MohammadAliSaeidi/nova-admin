@@ -2,9 +2,9 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { useAppSelector } from "../shared/lib/redux/hooks";
-import { createTheme } from "../shared/styles/theme";
 import { GlobalStyles } from "../shared/styles/global-styles";
 import { AppRoutes } from "./app-routes";
+import { createTheme } from "../shared/styles/theme";
 
 export function AppProviders() {
 	const colorMode = useAppSelector((state) => state.preferences.colorMode);
@@ -18,7 +18,6 @@ export function AppProviders() {
 	return (
 		<ThemeProvider theme={createTheme(colorMode)}>
 			<GlobalStyles />
-
 			<BrowserRouter>
 				<AppRoutes />
 			</BrowserRouter>

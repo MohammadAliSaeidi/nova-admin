@@ -1,5 +1,5 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { publicRoutePaths } from "../shared/data/routes/route-paths";
+import { publicRoutePaths } from "../shared/data/route-paths";
 import { useAppSelector } from "../shared/lib/redux/hooks";
 
 export function ProtectedRoute() {

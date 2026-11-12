@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../../shared/lib/utils/api/axios-instance";
+import { axiosInstance } from "../../../shared/lib/api/axios-instance";
 import { ApiError } from "../../../shared/types/api-error";
 import type { LoginPayload } from "../types/login-payload";
 import type { LoginResponse } from "../types/login-response";

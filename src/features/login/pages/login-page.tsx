@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { PreferencesControls } from "../../../shared/components/preferences-controls";
 import { Card } from "../../../shared/components/ui/card";
-import { routePaths } from "../../../shared/data/routes/route-paths";
+import { routePaths } from "../../../shared/data/route-paths";
 import { useAppSelector } from "../../../shared/lib/redux/hooks";
+import { PreferencesControls } from "../../../shared/components/preferences-controls";
 import { LoginForm } from "../components/login-form";
 
 const Page = styled.main`

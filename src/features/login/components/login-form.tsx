@@ -1,17 +1,17 @@
 import { useFormik } from "formik";
+import { LogIn } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { LogIn } from "lucide-react";
-import { Button } from "../../../shared/components/ui/button";
-import { FormField } from "../../../shared/components/ui/form-field";
-import { Input } from "../../../shared/components/ui/input";
-import { getMessages } from "../../../shared/data/internationalization/messages";
 import { useAppDispatch, useAppSelector } from "../../../shared/lib/redux/hooks";
+import { getMessages } from "../../../shared/data/dictionary/messages";
+import { loginSchema } from "../schema";
+import { loginRequest } from "../services/login-request";
 import { setToken } from "../../../shared/lib/redux/slices/auth-slice";
 import { getLoginErrorMessage } from "../utils/get-login-error-message";
-import { loginSchema } from "../schemas/login.schema";
-import { loginRequest } from "../services/login-request.service";
+import { FormField } from "../../../shared/components/ui/form-field";
+import { Button } from "../../../shared/components/ui/button";
+import { Input } from "../../../shared/components/ui/input";
 
 const Heading = styled.h1`
 	margin: 0 0 8px;
@@ -131,9 +131,7 @@ export function LoginForm({ destination }: LoginFormProps) {
 					/>
 				</FormField>
 				{typeof formik.status === "string" && (
-					<ErrorNotice role="alert">
-						{formik.status}
-					</ErrorNotice>
+					<ErrorNotice role="alert">{formik.status}</ErrorNotice>
 				)}
 				<Button type="submit" disabled={formik.isSubmitting}>
 					<LogIn size={16} aria-hidden="true" />

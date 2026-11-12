@@ -1,6 +1,6 @@
 import * as yup from "yup";
-import { getMessages } from "../../../shared/data/internationalization/messages";
-import type { Locale } from "../../../shared/types/locale";
+import { getMessages } from "../../shared/data/dictionary/messages";
+import type { Locale } from "../../shared/types/locale";
 
 export function loginSchema(locale: Locale) {
 	const messages = getMessages(locale);
