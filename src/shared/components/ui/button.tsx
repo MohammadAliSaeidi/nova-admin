@@ -10,9 +10,11 @@ const ButtonRoot = styled.button<{ $variant: ButtonVariant }>`
 	gap: 8px;
 	border: 1px solid
 		${({ theme, $variant }) =>
-			$variant === "primary" ? theme.colors.accent : theme.colors.border};
+			$variant === "primary"
+				? theme.colors.accent
+				: theme.colors.border};
 	border-radius: 10px;
-	padding: 11px 15px;
+	padding: 0.4375rem 0.5rem;
 	background: ${({ theme, $variant }) =>
 		$variant === "primary" ? theme.colors.accent : "transparent"};
 	color: ${({ theme, $variant }) =>
