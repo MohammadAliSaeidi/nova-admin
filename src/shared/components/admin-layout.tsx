@@ -1,17 +1,26 @@
+import { LogOut } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { getMessages } from "../data/dictionary/messages";
 import { routePaths } from "../data/route-paths";
+import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { clearToken } from "../lib/redux/slices/auth-slice";
+import { PreferencesControls } from "./preferences-controls";
+import { Button } from "./ui/button";
 
 const Shell = styled.div`
-	min-height: 100vh;
+	height: 100vh;
+	height: 100dvh;
+	overflow: hidden;
 	display: grid;
 	grid-template-columns: 250px minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
 `;
 
 const Sidebar = styled.aside`
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
 	padding: 28px 18px;
 	background: ${({ theme }) => theme.colors.sidebar};
 	color: ${({ theme }) => theme.colors.sidebarText};
@@ -43,21 +52,34 @@ const Navigation = styled.nav`
 
 const Main = styled.main`
 	min-width: 0;
-	padding: 28px 36px;
+	min-height: 0;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	overflow: hidden;
+`;
+
+const Content = styled.div`
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	padding-inline: 28px;
 `;
 
 const Header = styled.header`
 	display: flex;
 	justify-content: flex-end;
-	margin-bottom: 36px;
+	align-items: center;
+	padding: 8px 20px;
+	background-color: ${({ theme }) => theme.colors.surface};
 `;
 
-const LogoutButton = styled.button`
+const LogoutButton = styled(Button)`
 	border: 0;
 	border-radius: 10px;
 	padding: 10px 16px;
-	background: ${({ theme }) => theme.colors.surface};
-	color: ${({ theme }) => theme.colors.text};
+	background: ${({ theme }) => theme.colors.muted};
+	color: ${({ theme }) => theme.colors.sidebarText};
 	cursor: pointer;
 `;
 
@@ -80,6 +102,7 @@ export function AdminLayout() {
 						{messages.users}
 					</NavLink>
 				</Navigation>
+				<PreferencesControls inSidebar />
 			</Sidebar>
 
 			<Main>
@@ -89,10 +112,13 @@ export function AdminLayout() {
 						onClick={() => dispatch(clearToken())}
 					>
 						{messages.logout}
+						<LogOut />
 					</LogoutButton>
 				</Header>
 
-				<Outlet />
+				<Content>
+					<Outlet />
+				</Content>
 			</Main>
 		</Shell>
 	);
