@@ -1,12 +1,9 @@
 import { Languages, Moon, Sun } from "lucide-react";
 import styled from "styled-components";
 import { Button } from "./ui/button";
-import { getMessages } from "../data/internationalization/messages";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
-import {
-	setColorMode,
-	setLocale,
-} from "../lib/redux/slices/preferences-slice";
+import { getMessages } from "../data/dictionary/messages";
+import { setColorMode, setLocale } from "../lib/redux/slices/preferences-slice";
 
 const Controls = styled.div`
 	display: flex;
@@ -27,7 +24,9 @@ export function PreferencesControls() {
 				type="button"
 				variant="outline"
 				aria-label={messages.switchLanguage}
-				onClick={() => dispatch(setLocale(locale === "fa" ? "en" : "fa"))}
+				onClick={() =>
+					dispatch(setLocale(locale === "fa" ? "en" : "fa"))
+				}
 			>
 				<Languages size={16} aria-hidden="true" />
 				{locale === "fa"
@@ -40,7 +39,9 @@ export function PreferencesControls() {
 				aria-label={messages.toggleTheme}
 				onClick={() =>
 					dispatch(
-						setColorMode(colorMode === "light" ? "dark" : "light"),
+						setColorMode(
+							colorMode === "light" ? "dark" : "light",
+						),
 					)
 				}
 			>
@@ -49,7 +50,9 @@ export function PreferencesControls() {
 				) : (
 					<Sun size={16} aria-hidden="true" />
 				)}
-				{colorMode === "light" ? messages.darkMode : messages.lightMode}
+				{colorMode === "light"
+					? messages.darkMode
+					: messages.lightMode}
 			</Button>
 		</Controls>
 	);
