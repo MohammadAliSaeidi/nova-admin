@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../features/login/pages/login-page";
-import { ProductsPage } from "../features/products/pages/products-page";
+import ProductsPage from "../features/products/pages/products-page";
 import { UsersPage } from "../features/users/pages/users-page";
 import { AdminLayout } from "../shared/components/admin-layout";
 import { publicRoutePaths, routePaths } from "../shared/data/route-paths";
