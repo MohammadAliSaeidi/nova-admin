@@ -4,6 +4,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { store } from "./shared/lib/redux/store";
 import { AppProviders } from "./app/app-providers";
+import "./shared/styles/typography.css";
 
 const queryClient = new QueryClient({
  defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

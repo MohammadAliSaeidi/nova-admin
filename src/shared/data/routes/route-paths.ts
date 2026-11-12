@@ -1,3 +1,8 @@
+export const publicRoutePaths = {
+	login: "/login",
+} as const;
+
 export const routePaths = {
- login: "/login",
+	products: "/products",
+	users: "/users",
 } as const;

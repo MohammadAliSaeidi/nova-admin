@@ -1,0 +1,22 @@
+@font-face {
+	font-family: "Vazirmatn";
+	src: url("../../assets/fonts/Vazirmatn-Regular.woff2") format("woff2");
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+}
+
+html[lang="fa"] body {
+	font-family: "Vazirmatn", Inter, Tahoma, Arial, sans-serif;
+}
+
+html[lang="en"] body {
+	font-family: Inter, Tahoma, Arial, sans-serif;
+}
+
+button,
+input,
+textarea,
+select {
+	font: inherit;
+}

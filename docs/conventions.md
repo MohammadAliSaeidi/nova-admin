@@ -13,6 +13,9 @@
 - Derive values directly or in selectors. Effects synchronize external systems; no ad hoc endpoint fetching effects.
 - One stable browser QueryClient. Feature-owned query/mutation hooks with stable entity keys. Local search does not change the all-rows query key.
 - Separate rendering, orchestration, transport and pure rules. Extract repeated behavior with shared meaning; avoid one-line abstractions and speculative frameworks.
+- Keep state at the lowest common owner; lift it only when multiple consumers need it. Use effects to synchronize external systems, not to derive values or respond to user actions.
+- Optimize after identifying a measured or concrete render cost. Prefer simpler state placement and component composition before memoization.
+- Present loading, empty, expected failure and retry states explicitly at the layer that owns the operation. Reserve route-level error boundaries for unexpected rendering failures; never expose stack traces or raw transport errors.
 
 ## Forms and API
 
@@ -28,11 +31,20 @@
 - Logical CSS, visible focus, semantic tables/buttons and label associations.
 - All fixed visible text, validation/status messages and accessibility labels use bilingual dictionaries. API prose is separate.
 - Locale drives dictionary and lang/dir. Verify both languages/themes at >=1280px. Format USD with Intl, without conversion.
+- Give every form control an associated visible label. Connect field errors with `aria-describedby`, mark invalid fields, and announce submission feedback. Give icon-only controls an accessible name and keep keyboard focus visible.
+- Use stable entity keys for changing lists. Do not add ARIA roles where native HTML semantics already provide them.
+
+## Components and TypeScript
+
+- Keep presentation components driven by props; keep routing, data operations and error mapping in the page/controller or feature hook that owns them.
+- Extract a hook when it encapsulates reusable behavior or a meaningful lifecycle. Prefer a pure function when the logic does not need React.
+- Avoid `any`, unchecked API payload assumptions and broad type assertions. Narrow `unknown` errors and validate untrusted runtime data at the transport/service boundary where required.
+- Keep component and handler names explicit. Avoid defining component types inside render and avoid unstable array-index keys for changing lists.
 
 ## Working agreement and checks
 
 Bun is the package manager. Keep dependency changes in package.json and bun.lock together, review the resolved versions, and use frozen-lockfile installation for reproducible checkouts.
 
-For behavioral changes, write a failing behavior test first when a runner exists, implement minimally, then refactor with passing tests. Until the test runner is configured, document manual checks and the automation gap. Documentation and structural changes need checks appropriate to their scope. Test observable behavior, business invariants and failure cases.
+For behavioral changes, write a failing behavior test first when a runner exists, implement minimally, then refactor with passing tests. Test observable behavior, business invariants, important failure states and accessible user-facing outcomes; avoid assertions tied to private implementation details. Until the test runner is configured, document manual checks and the automation gap. Documentation and structural changes need checks appropriate to their scope.
 
 After code changes run `bun run typecheck`, `bun run lint`, `bun run build` and affected acceptance scenarios. Record passed, failed and unverified checks separately. Keep commits focused and describe the behavior changed.
