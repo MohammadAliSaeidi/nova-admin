@@ -28,6 +28,11 @@ function getSafeDestination(destination: unknown): string {
 	);
 }
 
+const LoginPreferences = styled(PreferencesControls)`
+	justify-content: flex-end;
+	margin-bottom: 24px;
+`;
+
 export default function LoginPage() {
 	const token = useAppSelector((state) => state.auth.token);
 	const hadSessionOnMount = useRef(Boolean(token));
@@ -47,7 +52,7 @@ export default function LoginPage() {
 	return (
 		<Page>
 			<LoginCard aria-labelledby="login-title">
-				<PreferencesControls />
+				<LoginPreferences />
 				<LoginForm destination={destination} />
 			</LoginCard>
 		</Page>

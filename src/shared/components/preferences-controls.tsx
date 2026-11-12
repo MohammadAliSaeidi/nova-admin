@@ -7,43 +7,45 @@ import { setColorMode, setLocale } from "../lib/redux/slices/preferences-slice";
 
 const Controls = styled.div`
 	display: flex;
-	justify-content: flex-end;
+	flex-wrap: wrap;
 	gap: 8px;
-	margin-bottom: 24px;
 `;
 
-export function PreferencesControls() {
+interface PreferencesControlsProps {
+	className?: string;
+}
+
+export function PreferencesControls({ className }: PreferencesControlsProps) {
 	const dispatch = useAppDispatch();
 	const locale = useAppSelector((state) => state.preferences.locale);
 	const colorMode = useAppSelector((state) => state.preferences.colorMode);
 	const messages = getMessages(locale);
 
+	const toggleLocale = () =>
+		dispatch(setLocale(locale === "fa" ? "en" : "fa"));
+
+	const toggleColorMode = () =>
+		dispatch(setColorMode(colorMode === "light" ? "dark" : "light"));
+
 	return (
-		<Controls>
+		<Controls className={className}>
 			<Button
 				type="button"
 				variant="outline"
 				aria-label={messages.switchLanguage}
-				onClick={() =>
-					dispatch(setLocale(locale === "fa" ? "en" : "fa"))
-				}
+				onClick={toggleLocale}
 			>
 				<Languages size={16} aria-hidden="true" />
 				{locale === "fa"
 					? messages.languageEnglish
 					: messages.languagePersian}
 			</Button>
+
 			<Button
 				type="button"
 				variant="outline"
 				aria-label={messages.toggleTheme}
-				onClick={() =>
-					dispatch(
-						setColorMode(
-							colorMode === "light" ? "dark" : "light",
-						),
-					)
-				}
+				onClick={toggleColorMode}
 			>
 				{colorMode === "light" ? (
 					<Moon size={16} aria-hidden="true" />

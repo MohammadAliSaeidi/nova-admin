@@ -83,6 +83,17 @@ const LogoutButton = styled(Button)`
 	cursor: pointer;
 `;
 
+const SidebarPreferences = styled(PreferencesControls)`
+	flex-direction: column;
+	margin-top: auto;
+
+	& > button {
+		width: 100%;
+		color: ${({ theme }) => theme.colors.sidebarText};
+		border-color: ${({ theme }) => theme.colors.sidebarText};
+	}
+`;
+
 export function AdminLayout() {
 	const dispatch = useAppDispatch();
 	const locale = useAppSelector((state) => state.preferences.locale);
@@ -102,7 +113,7 @@ export function AdminLayout() {
 						{messages.users}
 					</NavLink>
 				</Navigation>
-				<PreferencesControls inSidebar />
+				<SidebarPreferences />
 			</Sidebar>
 
 			<Main>
