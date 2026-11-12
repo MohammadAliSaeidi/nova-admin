@@ -13,14 +13,21 @@ interface ProductsSearchProps {
 	onChange: (value: string) => void;
 }
 
-export function ProductsSearch({ label, onChange }: ProductsSearchProps) {
+const Container = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+`;
+
+export function ProductsSearch(props: ProductsSearchProps) {
+	const { label, onChange } = props;
 	const [inputValue, setInputValue] = useState("");
 	const debouncedValue = useDebounce(inputValue);
 
 	useEffect(() => onChange(debouncedValue), [debouncedValue, onChange]);
 
 	return (
-		<>
+		<Container>
 			<label htmlFor="products-search">{label}</label>
 			<SearchInput
 				id="products-search"
@@ -28,6 +35,6 @@ export function ProductsSearch({ label, onChange }: ProductsSearchProps) {
 				value={inputValue}
 				onChange={(event) => setInputValue(event.target.value)}
 			/>
-		</>
+		</Container>
 	);
 }

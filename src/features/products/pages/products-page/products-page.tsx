@@ -3,10 +3,10 @@ import { Button } from "../../../../shared/components/ui/button";
 import { getMessages } from "../../../../shared/data/dictionary/messages";
 import { useAppSelector } from "../../../../shared/lib/redux/hooks";
 import { ProductsSearch } from "../../components/products-search";
-import { ProductsTable } from "../../components/products-table";
+import ProductsTable from "../../components/products-table";
 import { useProducts } from "../../hooks/use-products";
-import { Status } from "./styles";
 import { searchProducts } from "../../utils/search-products";
+import { Status } from "./styles";
 
 export default function ProductsPage() {
 	const locale = useAppSelector((state) => state.preferences.locale);
@@ -51,7 +51,10 @@ export default function ProductsPage() {
 	return (
 		<section>
 			<h1>{messages.products}</h1>
-			<ProductsSearch label={messages.searchProducts} onChange={setSearch} />
+			<ProductsSearch
+				label={messages.searchProducts}
+				onChange={setSearch}
+			/>
 			{productsQuery.isError && (
 				<Status role="alert">
 					{messages.productsLoadError}
