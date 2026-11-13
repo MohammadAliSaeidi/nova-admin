@@ -1,4 +1,4 @@
-import { getMessages } from "../../../shared/data/internationalization/messages";
+import { getMessages } from "../../../shared/data/dictionary/messages";
 import { useAppSelector } from "../../../shared/lib/redux/hooks";
 
 export function UsersPage() {
