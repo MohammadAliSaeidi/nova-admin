@@ -1,29 +1,69 @@
+﻿import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import LoginPage from "../features/login/pages/login-page";
-import ProductsPage from "../features/products/pages/products-page";
-import CreateProductPage from "../features/products/pages/create-product-page";
-import { UsersPage } from "../features/users/pages/users-page";
 import { AdminLayout } from "../shared/components/admin-layout";
+import { SuspenseWrapper } from "../shared/components/suspense-wrapper";
 import { publicRoutePaths, routePaths } from "../shared/data/route-paths";
 import { ProtectedRoute } from "./protected-route";
+import styled from "styled-components";
+
+const LoginPage = React.lazy(
+	() => import("../features/login/pages/login-page"),
+);
+
+const ProductsPage = React.lazy(
+	() => import("../features/products/pages/products-page"),
+);
+
+const CreateProductPage = React.lazy(
+	() => import("../features/products/pages/create-product-page"),
+);
+
+const UsersPage = React.lazy(() =>
+	import("../features/users/pages/users-page").then((module) => ({
+		default: module.UsersPage,
+	})),
+);
+
+const LoginSuspenseWrapper = styled(SuspenseWrapper)`
+	height: 100dvh;
+`;
 
 export function AppRoutes() {
 	return (
 		<Routes>
-			<Route path={publicRoutePaths.login} element={<LoginPage />} />
+			<Route
+				path={publicRoutePaths.login}
+				element={
+					<LoginSuspenseWrapper>
+						<LoginPage />
+					</LoginSuspenseWrapper>
+				}
+			/>
 			<Route element={<ProtectedRoute />}>
 				<Route element={<AdminLayout />}>
 					<Route
 						path={routePaths.productsNew}
-						element={<CreateProductPage />}
+						element={
+							<SuspenseWrapper>
+								<CreateProductPage />
+							</SuspenseWrapper>
+						}
 					/>
 					<Route
 						path={routePaths.products}
-						element={<ProductsPage />}
+						element={
+							<SuspenseWrapper>
+								<ProductsPage />
+							</SuspenseWrapper>
+						}
 					/>
 					<Route
 						path={routePaths.users}
-						element={<UsersPage />}
+						element={
+							<SuspenseWrapper>
+								<UsersPage />
+							</SuspenseWrapper>
+						}
 					/>
 				</Route>
 			</Route>
