@@ -1,6 +1,8 @@
 export type ApiErrorKind =
 	| "network"
 	| "unauthorized"
+	| "forbidden"
+	| "conflict"
 	| "validation"
 	| "server"
 	| "unknown";

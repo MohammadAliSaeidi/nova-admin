@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "../features/login/pages/login-page";
 import ProductsPage from "../features/products/pages/products-page";
+import CreateProductPage from "../features/products/pages/create-product-page";
 import { UsersPage } from "../features/users/pages/users-page";
 import { AdminLayout } from "../shared/components/admin-layout";
 import { publicRoutePaths, routePaths } from "../shared/data/route-paths";
@@ -12,6 +13,10 @@ export function AppRoutes() {
 			<Route path={publicRoutePaths.login} element={<LoginPage />} />
 			<Route element={<ProtectedRoute />}>
 				<Route element={<AdminLayout />}>
+					<Route
+						path={routePaths.productsNew}
+						element={<CreateProductPage />}
+					/>
 					<Route
 						path={routePaths.products}
 						element={<ProductsPage />}

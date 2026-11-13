@@ -1,6 +1,9 @@
-import type { Product } from "../types/product";
+import type { ProductListItem } from "../types/product-list-item";
 
-export function searchProducts(products: Product[], query: string): Product[] {
+export function searchProducts(
+	products: ProductListItem[],
+	query: string,
+): ProductListItem[] {
 	const normalizedQuery = query.trim().toLocaleLowerCase();
 	if (!normalizedQuery) return products;
 

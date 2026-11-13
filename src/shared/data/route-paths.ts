@@ -4,5 +4,6 @@ export const publicRoutePaths = {
 
 export const routePaths = {
 	products: "/products",
+	productsNew: "/products/new",
 	users: "/users",
 } as const;
