@@ -5,6 +5,8 @@ import type { Locale } from "../../../shared/types/locale";
 const messageKeyByErrorKind = {
 	network: "loginNetworkError",
 	unauthorized: "loginInvalidCredentials",
+	forbidden: "loginUnknownError",
+	conflict: "loginUnknownError",
 	validation: "loginInvalidCredentials",
 	server: "loginServerError",
 	unknown: "loginUnknownError",
@@ -12,5 +14,6 @@ const messageKeyByErrorKind = {
 
 export function getLoginErrorMessage(error: unknown, locale: Locale): string {
 	const errorKind = error instanceof ApiError ? error.kind : "unknown";
+
 	return getMessages(locale)[messageKeyByErrorKind[errorKind]];
 }
