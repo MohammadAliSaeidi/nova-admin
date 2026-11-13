@@ -2,7 +2,7 @@ import { Languages, Moon, Sun } from "lucide-react";
 import styled from "styled-components";
 import { Button } from "./ui/button";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
-import { getMessages } from "../data/dictionary/messages";
+import { useMessages } from "../data/dictionary/use-messages";
 import { setColorMode, setLocale } from "../lib/redux/slices/preferences-slice";
 
 const Controls = styled.div`
@@ -19,7 +19,7 @@ export function PreferencesControls({ className }: PreferencesControlsProps) {
 	const dispatch = useAppDispatch();
 	const locale = useAppSelector((state) => state.preferences.locale);
 	const colorMode = useAppSelector((state) => state.preferences.colorMode);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 
 	const toggleLocale = () =>
 		dispatch(setLocale(locale === "fa" ? "en" : "fa"));
