@@ -19,7 +19,9 @@ const baseButton = css<VariantProps>`
 				? theme.colors.accent
 				: theme.colors.border};
 	border-radius: 10px;
-	padding: 0.4375rem 0.5rem;
+	padding-inline: 0.5rem;
+	height: 2.5rem;
+
 	background: ${({ theme, $variant }) =>
 		$variant === "primary" ? theme.colors.accent : "transparent"};
 	color: ${({ theme, $variant }) =>
