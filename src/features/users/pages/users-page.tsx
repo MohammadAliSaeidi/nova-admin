@@ -1,9 +1,7 @@
-import { getMessages } from "../../../shared/data/dictionary/messages";
-import { useAppSelector } from "../../../shared/lib/redux/hooks";
+import { useMessages } from "../../../shared/data/dictionary/use-messages";
 
 export function UsersPage() {
-	const locale = useAppSelector((state) => state.preferences.locale);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 
 	return (
 		<section>
