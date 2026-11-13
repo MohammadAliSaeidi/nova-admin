@@ -1,61 +1,29 @@
 import { useFormik } from "formik";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { Button } from "../../../../shared/components/ui/button";
 import { FormField } from "../../../../shared/components/ui/form-field";
 import { Input } from "../../../../shared/components/ui/input";
 import { PriceInput } from "../../../../shared/components/ui/price-input";
 import { Select } from "../../../../shared/components/ui/select";
 import { Textarea } from "../../../../shared/components/ui/textarea";
-import { getMessages } from "../../../../shared/data/dictionary/messages";
-import { useAppSelector } from "../../../../shared/lib/redux/hooks";
+import { useMessages } from "../../../../shared/data/dictionary/use-messages";
 import { routePaths } from "../../../../shared/data/route-paths";
+import { useAppSelector } from "../../../../shared/lib/redux/hooks";
 import { useCreateProduct } from "../../hooks/use-create-product";
 import { useProductCategories } from "../../hooks/use-product-categories";
 import { createProductSchema } from "../../schemas/create-product-schema";
 import type { CreateProductValues } from "../../types/create-product-values";
 import { getCreateProductErrorMessage } from "../../utils/get-create-product-error-message";
-
-const Heading = styled.h1`
-	margin: 0 0 8px;
-	font-size: 28px;
-`;
-
-const Description = styled.p`
-	margin: 0 0 24px;
-	color: ${({ theme }) => theme.colors.muted};
-`;
-
-const Form = styled.form`
-	display: grid;
-	gap: 18px;
-	max-width: 720px;
-`;
-
-const Fields = styled.fieldset`
-	display: grid;
-	gap: 18px;
-	min-width: 0;
-	margin: 0;
-	padding: 0;
-	border: 0;
-`;
-
-const Notice = styled.p`
-	margin: 0;
-	color: ${({ theme }) => theme.colors.danger};
-`;
-
-const Status = styled.p`
-	margin: 0;
-	color: ${({ theme }) => theme.colors.muted};
-`;
-
-const Actions = styled.div`
-	display: flex;
-	gap: 12px;
-`;
+import {
+	Actions,
+	Description,
+	Fields,
+	Form,
+	Heading,
+	Notice,
+	Status,
+} from "./styled-components";
 
 const initialValues: CreateProductValues = {
 	title: "",
@@ -67,11 +35,14 @@ const initialValues: CreateProductValues = {
 
 export default function CreateProductPage() {
 	const locale = useAppSelector((state) => state.preferences.locale);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 	const navigate = useNavigate();
 	const categoriesQuery = useProductCategories();
 	const createProduct = useCreateProduct();
-	const validationSchema = useMemo(() => createProductSchema(locale), [locale]);
+	const validationSchema = useMemo(
+		() => createProductSchema(locale),
+		[locale],
+	);
 
 	const formik = useFormik<CreateProductValues>({
 		initialValues,
@@ -87,7 +58,9 @@ export default function CreateProductPage() {
 					state: { productCreated: true },
 				});
 			} catch (error: unknown) {
-				helpers.setStatus(getCreateProductErrorMessage(error, locale));
+				helpers.setStatus(
+					getCreateProductErrorMessage(error, locale),
+				);
 			}
 		},
 	});
@@ -115,7 +88,11 @@ export default function CreateProductPage() {
 					aria-label={messages.createProductHeading}
 					disabled={isPending || !optionsAvailable}
 				>
-					<FormField id="product-title" label={messages.title} error={titleError}>
+					<FormField
+						id="product-title"
+						label={messages.title}
+						error={titleError}
+					>
 						<Input
 							id="product-title"
 							name="title"
@@ -124,7 +101,11 @@ export default function CreateProductPage() {
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							aria-invalid={Boolean(titleError)}
-							aria-describedby={titleError ? "product-title-error" : undefined}
+							aria-describedby={
+								titleError
+									? "product-title-error"
+									: undefined
+							}
 						/>
 					</FormField>
 					<FormField
@@ -140,22 +121,35 @@ export default function CreateProductPage() {
 							onBlur={formik.handleBlur}
 							aria-invalid={Boolean(descriptionError)}
 							aria-describedby={
-								descriptionError ? "product-description-error" : undefined
+								descriptionError
+									? "product-description-error"
+									: undefined
 							}
 						/>
 					</FormField>
-					<FormField id="product-price" label={messages.price} error={priceError}>
+					<FormField
+						id="product-price"
+						label={messages.price}
+						error={priceError}
+					>
 						<PriceInput
 							id="product-price"
 							name="price"
 							value={formik.values.price}
 							locale={locale}
 							onValueChange={(value) => {
-								void formik.setFieldValue("price", value);
+								void formik.setFieldValue(
+									"price",
+									value,
+								);
 							}}
 							onBlur={formik.handleBlur}
 							aria-invalid={Boolean(priceError)}
-							aria-describedby={priceError ? "product-price-error" : undefined}
+							aria-describedby={
+								priceError
+									? "product-price-error"
+									: undefined
+							}
 						/>
 					</FormField>
 					<FormField
@@ -171,7 +165,9 @@ export default function CreateProductPage() {
 							onBlur={formik.handleBlur}
 							aria-invalid={Boolean(categoryError)}
 							aria-describedby={
-								categoryError ? "product-category-error" : undefined
+								categoryError
+									? "product-category-error"
+									: undefined
 							}
 						>
 							<option value="">{messages.category}</option>
@@ -198,14 +194,18 @@ export default function CreateProductPage() {
 							onBlur={formik.handleBlur}
 							aria-invalid={Boolean(imageUrlError)}
 							aria-describedby={
-								imageUrlError ? "product-image-url-error" : undefined
+								imageUrlError
+									? "product-image-url-error"
+									: undefined
 							}
 						/>
 					</FormField>
 				</Fields>
 
 				{categoriesQuery.isPending && (
-					<Status role="status">{messages.loadingCategories}</Status>
+					<Status role="status">
+						{messages.loadingCategories}
+					</Status>
 				)}
 				{categoriesQuery.isError && (
 					<Notice role="alert">
@@ -213,21 +213,30 @@ export default function CreateProductPage() {
 						<Button
 							type="button"
 							disabled={categoriesQuery.isFetching}
-							onClick={() => void categoriesQuery.refetch()}
+							onClick={() =>
+								void categoriesQuery.refetch()
+							}
 						>
 							{messages.retry}
 						</Button>
 					</Notice>
 				)}
 				{categoriesQuery.data?.length === 0 && (
-					<Status role="status">{messages.noProductCategories}</Status>
+					<Status role="status">
+						{messages.noProductCategories}
+					</Status>
 				)}
 				{typeof formik.status === "string" && (
 					<Notice role="alert">{formik.status}</Notice>
 				)}
 				<Actions>
-					<Button type="submit" disabled={isPending || !optionsAvailable}>
-						{isPending ? messages.creatingProduct : messages.createProduct}
+					<Button
+						type="submit"
+						disabled={isPending || !optionsAvailable}
+					>
+						{isPending
+							? messages.creatingProduct
+							: messages.createProduct}
 					</Button>
 					<Button
 						type="button"

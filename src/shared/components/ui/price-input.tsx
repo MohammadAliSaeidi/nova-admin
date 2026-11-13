@@ -1,31 +1,29 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import styled from "styled-components";
+import { useCaretRestore } from "../../hooks/use-carret-restore";
+import {
+	groupDraft,
+	isValidDraft,
+	normalizeDecimal,
+} from "../../lib/utils/decimal";
 import { Input } from "./input";
-
-const decimalRe = /^\d*\.?\d*$/;
-
-function normalizeDecimal(value: string): string {
-	return value
-		.replace(/[۰-۹]/g, (digit) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(digit)))
-		.replace(/[٠-٩]/g, (digit) => String("٠١٢٣٤٥٦٧٨٩".indexOf(digit)))
-		.replace(/[٫,]/g, ".");
-}
 
 const Wrapper = styled.div`
 	position: relative;
-
-	input {
-		padding-left: 42px;
-	}
+	display: flex;
+	align-items: center;
 `;
 
 const CurrencySymbol = styled.span`
 	position: absolute;
-	left: 12px;
-	top: 50%;
-	transform: translateY(-50%);
+	inset-inline-start: 12px;
 	color: ${({ theme }) => theme.colors.muted};
 	pointer-events: none;
+`;
+
+const PriceField = styled(Input)`
+	width: 100%;
+	padding-inline-start: calc(12px + var(--symbol-width, 1ch) + 8px);
 `;
 
 interface PriceInputProps extends Omit<
@@ -34,29 +32,17 @@ interface PriceInputProps extends Omit<
 > {
 	value: string;
 	onValueChange: (value: string) => void;
-	currency?: string; // "USD"
+	currency?: string;
 	locale: string;
 }
 
 export function PriceInput({
 	value,
 	onValueChange,
-	onBlur,
 	currency = "USD",
 	locale,
 	...rest
 }: PriceInputProps) {
-	const [focused, setFocused] = useState(false);
-
-	const formatter = useMemo(
-		() =>
-			new Intl.NumberFormat(locale, {
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			}),
-		[locale],
-	);
-
 	const symbol = useMemo(
 		() =>
 			new Intl.NumberFormat(locale, { style: "currency", currency })
@@ -65,29 +51,30 @@ export function PriceInput({
 		[locale, currency],
 	);
 
-	const display =
-		focused || value === "" || Number.isNaN(Number(value))
-			? value
-			: formatter.format(Number(value));
+	const display = groupDraft(value);
+	const { ref, capture } = useCaretRestore(display);
 
 	return (
 		<Wrapper>
 			<CurrencySymbol aria-hidden="true">{symbol}</CurrencySymbol>
-			<Input
+			<PriceField
 				{...rest}
+				ref={ref}
+				style={
+					{
+						"--symbol-width": `${symbol.length}ch`,
+					} as React.CSSProperties
+				}
 				type="text"
 				inputMode="decimal"
 				dir="ltr"
 				autoComplete="off"
 				value={display}
-				onFocus={() => setFocused(true)}
-				onBlur={(e) => {
-					setFocused(false);
-					onBlur?.(e);
-				}}
 				onChange={(e) => {
 					const next = normalizeDecimal(e.target.value);
-					if (decimalRe.test(next)) onValueChange(next);
+					if (!isValidDraft(next)) return;
+					capture(e.target);
+					onValueChange(next);
 				}}
 			/>
 		</Wrapper>

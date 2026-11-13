@@ -1,10 +1,17 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import { Button, LinkButton } from "../../../../shared/components/ui/button";
-import { getMessages } from "../../../../shared/data/dictionary/messages";
+import { Pagination } from "../../../../shared/components/ui/pagination";
+import { useMessages } from "../../../../shared/data/dictionary/use-messages";
 import { routePaths } from "../../../../shared/data/route-paths";
 import { useAppSelector } from "../../../../shared/lib/redux/hooks";
+import {
+	clampPage,
+	getPageCount,
+	getPageItems,
+} from "../../../../shared/lib/utils/pagination";
+import { useSearchParam } from "../../../../shared/hooks/use-search-param";
 import { ProductsSearch } from "../../components/products-search";
 import ProductsTable from "../../components/products-table";
 import { useProducts } from "../../hooks/use-products/use-products";
@@ -23,6 +30,8 @@ const PageHeading = styled.div`
 	}
 `;
 
+const PRODUCTS_PER_PAGE = 10;
+
 function hasProductCreatedNotice(state: unknown): boolean {
 	return (
 		typeof state === "object" &&
@@ -34,8 +43,12 @@ function hasProductCreatedNotice(state: unknown): boolean {
 
 export default function ProductsPage() {
 	const locale = useAppSelector((state) => state.preferences.locale);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 	const [search, setSearch] = useState("");
+	const pageParam = useSearchParam("page");
+	const { updateParam: replacePageParam } = useSearchParam("page", {
+		method: "replace",
+	});
 	const location = useLocation();
 	const productsQuery = useProducts();
 	const allProducts = productsQuery.data?.products;
@@ -43,6 +56,19 @@ export default function ProductsPage() {
 		() => searchProducts(allProducts ?? [], search),
 		[allProducts, search],
 	);
+	const pageCount = getPageCount(products.length, PRODUCTS_PER_PAGE);
+	const parsedPage = /^\d+$/.test(pageParam.value ?? "")
+		? Number(pageParam.value)
+		: 1;
+	const currentPage = clampPage(parsedPage, pageCount);
+	const visibleProducts = getPageItems(products, currentPage, PRODUCTS_PER_PAGE);
+
+	useEffect(() => {
+		if (!allProducts || pageParam.value === null) return;
+		if (pageParam.value !== String(currentPage)) {
+			replacePageParam(String(currentPage));
+		}
+	}, [allProducts, currentPage, pageParam.value, replacePageParam]);
 	const heading = (
 		<PageHeading>
 			<h1>{messages.products}</h1>
@@ -99,7 +125,10 @@ export default function ProductsPage() {
 			)}
 			<ProductsSearch
 				label={messages.searchProducts}
-				onChange={setSearch}
+				onChange={(value) => {
+					setSearch(value);
+					pageParam.deleteParam();
+				}}
 			/>
 			{productsQuery.isError &&
 				productsQuery.data?.hasBaseList !== false && (
@@ -122,12 +151,27 @@ export default function ProductsPage() {
 				</Status>
 			) : (
 				<ProductsTable
-					products={products}
+					products={visibleProducts}
 					locale={locale}
 					messages={messages}
 					isFetching={productsQuery.isFetching}
 				/>
 			)}
+			<Pagination
+				currentPage={currentPage}
+				pageCount={pageCount}
+				locale={locale}
+				direction={locale === "fa" ? "rtl" : "ltr"}
+				label={messages.paginationLabel}
+				previousLabel={messages.previousPage}
+				nextLabel={messages.nextPage}
+				pageSummary={(current, total) =>
+					messages.pageSummary
+						.replace("{{current}}", current)
+						.replace("{{total}}", total)
+				}
+				onPageChange={(page) => pageParam.updateParam(String(page))}
+			/>
 		</section>
 	);
 }

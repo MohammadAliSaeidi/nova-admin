@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { getMessages } from "../../../shared/data/dictionary/messages";
+import { getMessages } from "../../../shared/data/dictionary/get-messages";
 import type { Locale } from "../../../shared/types/locale";
 import type { CreateProductValues } from "../types/create-product-values";
 
@@ -39,7 +39,8 @@ export function createProductSchema(locale: Locale) {
 				try {
 					const url = new URL(value);
 					return (
-						(url.protocol === "http:" || url.protocol === "https:") &&
+						(url.protocol === "http:" ||
+							url.protocol === "https:") &&
 						url.hostname.length > 0
 					);
 				} catch {

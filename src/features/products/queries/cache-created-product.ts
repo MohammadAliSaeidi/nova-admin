@@ -35,6 +35,7 @@ export async function cacheCreatedProduct(
 		...product,
 		localId: crypto.randomUUID(),
 	};
+	
 	queryClient.setQueryData<ProductListQueryData>(queryKey, (currentData) => {
 		const currentList = currentData ?? listData;
 		return {
