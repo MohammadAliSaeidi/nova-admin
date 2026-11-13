@@ -32,12 +32,24 @@ axiosInstance.interceptors.response.use(
 		}
 
 		const status = error.response.status;
-		let kind: "unauthorized" | "validation" | "server" | "unknown";
+		let kind:
+			| "unauthorized"
+			| "forbidden"
+			| "conflict"
+			| "validation"
+			| "server"
+			| "unknown";
 		let message: string;
 
 		if (status === 401) {
 			kind = "unauthorized";
 			message = "اطلاعات ورود معتبر نیست.";
+		} else if (status === 403) {
+			kind = "forbidden";
+			message = "Forbidden request.";
+		} else if (status === 409) {
+			kind = "conflict";
+			message = "Conflicting request.";
 		} else if (status === 400 || status === 422) {
 			kind = "validation";
 			message = "درخواست انجام نشد. دوباره تلاش کنید.";
