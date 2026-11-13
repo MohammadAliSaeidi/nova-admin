@@ -1,4 +1,4 @@
-import { getMessages } from "../../../shared/data/dictionary/messages";
+import { getMessages } from "../../../shared/data/dictionary/get-messages";
 import { ApiError, type ApiErrorKind } from "../../../shared/types/api-error";
 import type { Locale } from "../../../shared/types/locale";
 

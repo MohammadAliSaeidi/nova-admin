@@ -3,15 +3,18 @@ import { LogIn } from "lucide-react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useAppDispatch, useAppSelector } from "../../../shared/lib/redux/hooks";
-import { getMessages } from "../../../shared/data/dictionary/messages";
+import { Button } from "../../../shared/components/ui/button";
+import { FormField } from "../../../shared/components/ui/form-field";
+import { Input } from "../../../shared/components/ui/input";
+import { useMessages } from "../../../shared/data/dictionary/use-messages";
+import {
+	useAppDispatch,
+	useAppSelector,
+} from "../../../shared/lib/redux/hooks";
+import { setToken } from "../../../shared/lib/redux/slices/auth-slice";
 import { loginSchema } from "../schema";
 import { loginRequest } from "../services/login-request";
-import { setToken } from "../../../shared/lib/redux/slices/auth-slice";
 import { getLoginErrorMessage } from "../utils/get-login-error-message";
-import { FormField } from "../../../shared/components/ui/form-field";
-import { Button } from "../../../shared/components/ui/button";
-import { Input } from "../../../shared/components/ui/input";
 
 const Heading = styled.h1`
 	margin: 0 0 8px;
@@ -50,7 +53,7 @@ const initialValues: LoginValues = { username: "", password: "" };
 export function LoginForm({ destination }: LoginFormProps) {
 	const dispatch = useAppDispatch();
 	const locale = useAppSelector((state) => state.preferences.locale);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 	const navigate = useNavigate();
 	const validationSchema = useMemo(() => loginSchema(locale), [locale]);
 

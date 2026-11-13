@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { getMessages } from "../../shared/data/dictionary/messages";
+import { getMessages } from "../../shared/data/dictionary/get-messages";
 import type { Locale } from "../../shared/types/locale";
 
 export function loginSchema(locale: Locale) {
