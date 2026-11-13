@@ -2,9 +2,9 @@ import { LogOut } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { NavLink, Outlet } from "react-router-dom";
 import styled from "styled-components";
-import { getMessages } from "../data/dictionary/messages";
+import { useMessages } from "../data/dictionary/use-messages";
 import { routePaths } from "../data/route-paths";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import { useAppDispatch } from "../lib/redux/hooks";
 import { clearToken } from "../lib/redux/slices/auth-slice";
 import { PreferencesControls } from "./preferences-controls";
 import { Button } from "./ui/button";
@@ -98,8 +98,7 @@ const SidebarPreferences = styled(PreferencesControls)`
 export function AdminLayout() {
 	const dispatch = useAppDispatch();
 	const queryClient = useQueryClient();
-	const locale = useAppSelector((state) => state.preferences.locale);
-	const messages = getMessages(locale);
+	const messages = useMessages();
 	const handleLogout = () => {
 		dispatch(clearToken());
 		void queryClient.cancelQueries();
