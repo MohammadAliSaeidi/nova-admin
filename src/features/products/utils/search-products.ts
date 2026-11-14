@@ -1,9 +1,9 @@
 import type { ProductListItem } from "../types/product-list-item";
 
 export function searchProducts(
-	products: ProductListItem[],
+	products: readonly ProductListItem[],
 	query: string,
-): ProductListItem[] {
+): readonly ProductListItem[] {
 	const normalizedQuery = query.trim().toLocaleLowerCase();
 	if (!normalizedQuery) return products;
 
