@@ -1,34 +1,21 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
-import styled from "styled-components";
 import { Button, LinkButton } from "../../../../shared/components/ui/button";
 import { Pagination } from "../../../../shared/components/ui/pagination";
 import { useMessages } from "../../../../shared/data/dictionary/use-messages";
 import { routePaths } from "../../../../shared/data/route-paths";
+import { useSearchParam } from "../../../../shared/hooks/use-search-param";
 import { useAppSelector } from "../../../../shared/lib/redux/hooks";
 import {
 	clampPage,
 	getPageCount,
 	getPageItems,
 } from "../../../../shared/lib/utils/pagination";
-import { useSearchParam } from "../../../../shared/hooks/use-search-param";
 import { ProductsSearch } from "../../components/products-search";
 import ProductsTable from "../../components/products-table";
 import { useProducts } from "../../hooks/use-products/use-products";
 import { searchProducts } from "../../utils/search-products";
-import { Status } from "./styles";
-
-const PageHeading = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	margin-block: 22px 8px;
-
-	h1 {
-		margin: 0;
-	}
-`;
+import { PageContent, PageHeading, ProductResults, Status } from "./styles";
 
 const PRODUCTS_PER_PAGE = 10;
 
@@ -41,122 +28,141 @@ function hasProductCreatedNotice(state: unknown): boolean {
 	);
 }
 
+function parsePage(value: string | null): number {
+	return /^\d+$/.test(value ?? "") ? Number(value) : 1;
+}
+
+function formatPageSummary(
+	template: string,
+	current: string,
+	total: string,
+): string {
+	return template
+		.replace("{{current}}", String(current))
+		.replace("{{total}}", String(total));
+}
+
 export default function ProductsPage() {
 	const locale = useAppSelector((state) => state.preferences.locale);
 	const messages = useMessages();
+	const location = useLocation();
+	const productsQuery = useProducts();
+	const { data, isPending, isError, isFetching, refetch } = productsQuery;
+	const allProducts = data?.products;
+
 	const [search, setSearch] = useState("");
-	const pageParam = useSearchParam("page");
+
+	const {
+		value: pageParam,
+		updateParam: updatePageParam,
+		deleteParam: deletePageParam,
+	} = useSearchParam("page");
 	const { updateParam: replacePageParam } = useSearchParam("page", {
 		method: "replace",
 	});
-	const location = useLocation();
-	const productsQuery = useProducts();
-	const allProducts = productsQuery.data?.products;
+
 	const products = useMemo(
 		() => searchProducts(allProducts ?? [], search),
 		[allProducts, search],
 	);
 	const pageCount = getPageCount(products.length, PRODUCTS_PER_PAGE);
-	const parsedPage = /^\d+$/.test(pageParam.value ?? "")
-		? Number(pageParam.value)
-		: 1;
-	const currentPage = clampPage(parsedPage, pageCount);
-	const visibleProducts = getPageItems(products, currentPage, PRODUCTS_PER_PAGE);
-
-	useEffect(() => {
-		if (!allProducts || pageParam.value === null) return;
-		if (pageParam.value !== String(currentPage)) {
-			replacePageParam(String(currentPage));
-		}
-	}, [allProducts, currentPage, pageParam.value, replacePageParam]);
-	const heading = (
-		<PageHeading>
-			<h1>{messages.products}</h1>
-			<LinkButton to={routePaths.productsNew}>
-				{messages.createProduct}
-			</LinkButton>
-		</PageHeading>
+	const currentPage = clampPage(parsePage(pageParam), pageCount);
+	const visibleProducts = getPageItems(
+		products,
+		currentPage,
+		PRODUCTS_PER_PAGE,
 	);
 
-	if (productsQuery.isPending && !allProducts) {
-		return (
-			<section>
-				{heading}
-				<Status role="status">{messages.loadingProducts}</Status>
-			</section>
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			if (value === search) return;
+			setSearch(value);
+			deletePageParam();
+		},
+		[deletePageParam, search],
+	);
+
+	const handleRetry = () => void refetch();
+
+	useEffect(() => {
+		if (!allProducts || pageParam === null) return;
+		if (pageParam !== String(currentPage)) {
+			replacePageParam(String(currentPage));
+		}
+	}, [allProducts, currentPage, pageParam, replacePageParam]);
+
+	const retryButton = (
+		<Button type="button" disabled={isFetching} onClick={handleRetry}>
+			{messages.retry}
+		</Button>
+	);
+
+	const page = (content: React.ReactNode) => (
+		<PageContent>
+			<PageHeading>
+				<h1>{messages.products}</h1>
+				<LinkButton to={routePaths.productsNew}>
+					{messages.createProduct}
+				</LinkButton>
+			</PageHeading>
+			{content}
+		</PageContent>
+	);
+
+	if (isPending && !allProducts) {
+		return page(
+			<Status role="status">{messages.loadingProducts}</Status>,
 		);
 	}
 
-	if (productsQuery.isError && !allProducts) {
-		return (
-			<section>
-				{heading}
-				<Status role="alert">
-					{messages.productsLoadError}
-					<Button
-						type="button"
-						disabled={productsQuery.isFetching}
-						onClick={() => void productsQuery.refetch()}
-					>
-						{messages.retry}
-					</Button>
-				</Status>
-			</section>
+	if (isError && !allProducts) {
+		return page(
+			<Status role="alert">
+				{messages.productsLoadError}
+				{retryButton}
+			</Status>,
 		);
 	}
 
-	return (
-		<section>
-			{heading}
-			{hasProductCreatedNotice(location.state) && (
+	const showCreatedNotice = hasProductCreatedNotice(location.state);
+	const showIncompleteList = data !== undefined && !data.hasBaseList;
+	const showBackgroundError = isError && data?.hasBaseList !== false;
+	const emptyMessage = allProducts?.length
+		? messages.noProductsMatch
+		: messages.noProducts;
+
+	return page(
+		<>
+			{showCreatedNotice && (
 				<Status role="status">{messages.productCreated}</Status>
 			)}
-			{productsQuery.data && !productsQuery.data.hasBaseList && (
+			{showIncompleteList && (
 				<Status role="alert">
-					{messages.productsListIncomplete}{" "}
-					<Button
-						type="button"
-						disabled={productsQuery.isFetching}
-						onClick={() => void productsQuery.refetch()}
-					>
-						{messages.retry}
-					</Button>
+					{messages.productsListIncomplete} {retryButton}
 				</Status>
 			)}
 			<ProductsSearch
 				label={messages.searchProducts}
-				onChange={(value) => {
-					setSearch(value);
-					pageParam.deleteParam();
-				}}
+				onChange={handleSearchChange}
 			/>
-			{productsQuery.isError &&
-				productsQuery.data?.hasBaseList !== false && (
-					<Status role="alert">
-						{messages.productsLoadError}
-						<Button
-							type="button"
-							disabled={productsQuery.isFetching}
-							onClick={() => void productsQuery.refetch()}
-						>
-							{messages.retry}
-						</Button>
-					</Status>
-				)}
-			{products.length === 0 ? (
-				<Status role="status">
-					{allProducts && allProducts.length > 0
-						? messages.noProductsMatch
-						: messages.noProducts}
+			{showBackgroundError && (
+				<Status role="alert">
+					{messages.productsLoadError}
+					{retryButton}
 				</Status>
-			) : (
-				<ProductsTable
-					products={visibleProducts}
-					locale={locale}
-					messages={messages}
-					isFetching={productsQuery.isFetching}
-				/>
 			)}
+			<ProductResults>
+				{products.length === 0 ? (
+					<Status role="status">{emptyMessage}</Status>
+				) : (
+					<ProductsTable
+						products={visibleProducts}
+						locale={locale}
+						messages={messages}
+						isFetching={isFetching}
+					/>
+				)}
+			</ProductResults>
 			<Pagination
 				currentPage={currentPage}
 				pageCount={pageCount}
@@ -166,12 +172,10 @@ export default function ProductsPage() {
 				previousLabel={messages.previousPage}
 				nextLabel={messages.nextPage}
 				pageSummary={(current, total) =>
-					messages.pageSummary
-						.replace("{{current}}", current)
-						.replace("{{total}}", total)
+					formatPageSummary(messages.pageSummary, current, total)
 				}
-				onPageChange={(page) => pageParam.updateParam(String(page))}
+				onPageChange={(next) => updatePageParam(String(next))}
 			/>
-		</section>
+		</>,
 	);
 }

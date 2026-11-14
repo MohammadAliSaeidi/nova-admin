@@ -6,4 +6,5 @@ export const routePaths = {
 	products: "/products",
 	productsNew: "/products/new",
 	users: "/users",
+	usersNew: "/users/new",
 } as const;

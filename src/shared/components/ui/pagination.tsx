@@ -32,6 +32,12 @@ const PageButton = styled.button<{ $active?: boolean }>`
 	}
 `;
 
+const DirectionalArrow = styled.span`
+	display: inline-block;
+	direction: ltr;
+	unicode-bidi: isolate;
+`;
+
 const PageSummary = styled.span`
 	position: absolute;
 	width: 1px;
@@ -81,7 +87,9 @@ export function Pagination({
 				aria-label={previousLabel}
 				onClick={() => onPageChange(currentPage - 1)}
 			>
-				{previous}
+				<DirectionalArrow dir="ltr" aria-hidden="true">
+					{previous}
+				</DirectionalArrow>
 			</PageButton>
 			{Array.from({ length: pageCount }, (_, index) => index + 1).map(
 				(page) => (
@@ -102,7 +110,9 @@ export function Pagination({
 				aria-label={nextLabel}
 				onClick={() => onPageChange(currentPage + 1)}
 			>
-				{next}
+				<DirectionalArrow dir="ltr" aria-hidden="true">
+					{next}
+				</DirectionalArrow>
 			</PageButton>
 			<PageSummary aria-live="polite">
 				{pageSummary(format(currentPage), format(pageCount))}
