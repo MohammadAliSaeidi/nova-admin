@@ -24,6 +24,10 @@ const UsersPage = React.lazy(() =>
 	})),
 );
 
+const CreateUserPage = React.lazy(
+	() => import("../features/users/pages/create-user-page"),
+);
+
 const LoginSuspenseWrapper = styled(SuspenseWrapper)`
 	height: 100dvh;
 `;
@@ -41,6 +45,14 @@ export function AppRoutes() {
 			/>
 			<Route element={<ProtectedRoute />}>
 				<Route element={<AdminLayout />}>
+					<Route
+						path={routePaths.usersNew}
+						element={
+							<SuspenseWrapper>
+								<CreateUserPage />
+							</SuspenseWrapper>
+						}
+					/>
 					<Route
 						path={routePaths.productsNew}
 						element={
