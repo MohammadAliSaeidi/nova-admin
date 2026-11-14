@@ -1,57 +1,55 @@
 # Architecture
 
-## Placement
+NOVA Admin is a single React/Vite application organized by feature. The challenge's section 3.3 shows a layer-oriented folder proposal; this project groups domain code by feature so that each feature's screens, validation, API operations, and types stay together. Shared UI and cross-feature infrastructure remain under `shared`. This is a documented project choice, not a requirement imposed by the challenge.
 
 ```text
 src/
-  main.tsx                       entry and outer providers
-  app/                           provider composition, route elements, guards
-  features/
-    login/                       login UI, schema, endpoint
-    products/                    product domain
-    users/                       user domain
-  shared/
-    components/                  reusable UI and admin shell
-    data/internationalization/   fixed UI dictionary
-    lib/redux/                   store, typed hooks, auth/preferences
-    lib/utils/api/               Axios transport
-    routes/                      route path constants only
-    styles/                      global styles, theme, theme typing
-    types/                       domain-neutral contracts
-  assets/                        assets
+├── features/
+│   ├── login/       pages, components, schema, services, types, utils
+│   ├── products/   pages, components, hooks, schemas, services, types, utils, queries
+│   └── users/      pages, components, hooks, schemas, services, types, utils, queries
+├── routes/         route composition, providers, protected-route guard
+├── shared/
+│   ├── components/ reusable UI and application shell
+│   ├── data/       dictionaries, route paths
+│   ├── hooks/      cross-feature hooks
+│   ├── lib/        Axios client, Redux setup, generic utilities
+│   ├── styles/     themes, global styles, typography
+│   └── types/      cross-feature contracts
+└── main.tsx        Vite entry point
 ```
 
-Inside features use `pages`, `components`, `services`, `schemas`, `types`, `hooks`, `model`, `utils` as needed. No empty speculative folders. A feature is a domain, not a second app with duplicate infrastructure.
+## Placement and dependencies
 
-Allowed imports: `app -> features/shared`, `features -> own feature/shared`, `shared -> shared`. No sibling-feature imports, feature-to-app imports or shared-to-feature imports. `main.tsx` is the entry composition exception. The existing `shared/lib/redux/store.ts` is the sole additional composition exception: it may register feature reducers when added, importing reducers only. Do not move domain slices into shared to evade feature ownership.
+- A feature owns its page-level composition and domain-specific components, hooks, schemas, services, types, query helpers, and pure utilities. Keep these beside the feature that uses them.
+- `shared` is for domain-neutral code used across features. Do not move feature-specific logic there just to make it globally importable.
+- `routes` composes the application, router, providers, route paths, and authentication guard. It may connect features; one feature should not import another feature's internals.
+- Feature hooks coordinate React and asynchronous state. Services perform HTTP calls and map/validate API data. Pure utilities do not depend on React or transport.
+- Keep imports direct and boundaries explicit. Add abstractions or shared exports only when there is a concrete repeated use.
 
-Use explicit direct imports. No barrels, generic repository framework, dependency injection container or cross-project imports. New paths use lowercase kebab-case. React exports use PascalCase and named exports; the existing default LoginPage export is retained. No alias is configured; use relative imports.
+## State ownership
 
-## Responsibility flow and state
-
-Page -> feature hook -> service -> shared Axios. Services map payloads/project responses. Hooks manage query/mutation lifecycle. Components render and invoke intent handlers. Pure search/merge/calculation functions have no React dependencies.
-
-| State | Owner |
+| Data | Owner |
 | --- | --- |
-| Fetched products/users/categories | TanStack Query |
-| Token/preferences | Redux Toolkit |
-| Successful mock creates | Feature Redux memory overlays, planned |
-| Values/touched/errors/submission | Formik + Yup |
-| Search/transient UI | Local state |
-| Merged/filtered rows | Derived functions/selectors |
+| Authentication token and user preferences | Redux Toolkit |
+| Remote products, categories, and users | TanStack Query |
+| Temporary rows returned by create mutations | The corresponding feature's TanStack Query cache |
+| Form values, touched fields, validation and submission | Formik with Yup schemas |
+| Search input and other short-lived UI state | Local React state or the shared URL-backed pagination/search hooks, according to the feature |
+| Display values derived from fetched data | Pure functions or render-time derivation |
 
-Overlay rows use unique local IDs independent of repeated mock API IDs. Append after success, preserve during refetch, clear on logout/refresh. Prevent pending old-session mutations from repopulating cleared data. Store only display fields, never passwords.
+Do not mirror remote collections in Redux or store values that can be derived from their source.
 
-## Routes and shared infrastructure
+## API and session behavior
 
-Path strings: `shared/routes/route-paths.ts`. Registration: `app/app-routes.tsx`. Public `/login`; guarded `/products`, `/products/new`, `/users`, `/users/new`. Create routes currently reuse placeholders and need dedicated pages.
+All requests use the shared Axios instance at `shared/lib/api/axios-instance.ts`; its base URL comes from `VITE_API_BASE_URL`. Feature services own endpoint calls and feature-specific response projection. UI code consumes typed service/query results rather than shaping raw transport data. TypeScript response generics do not validate data at runtime.
 
-Auth is memory-only. Redux locale/color mode feed document lang/dir and Styled ThemeProvider. Defaults: Persian/light. Preference persistence is unimplemented and not required by the challenge.
+FakeStoreAPI is a demonstration API and does not durably persist create operations. Product and user create results may be shown temporarily in their Query caches and may disappear after a later refetch or reload. The product create flow has explicit in-flight request and session-generation handling; do not assume other mutations have the same behavior without checking their implementation.
 
-Transport owns base URL, timeout and normalized error kinds. Services own endpoint details. UI/schema boundaries translate messages. No silent mock fallback. Current transport still contains Persian messages and needs localization at presentation boundaries.
+The demo login keeps the token in Redux memory. There is no owned backend/BFF to issue an HttpOnly cookie, so reload starts signed out. Logout clears authentication and private Query cache data. This is a frontend demo, not a production authorization boundary.
 
-## Suggested-layout deviation
+## Localization and theme
 
-Challenge `Pages`, domain `Components`, `Validations`, `Utils/services` and domain types map into features. `Shared` maps to `shared/components`; `Dictionary` to `shared/data/internationalization`; `Redux` to `shared/lib/redux`; route composition to `app`; path constants to `shared/routes`; `Utils/api` to `shared/lib/utils/api`. `Storage` is unnecessary until approved persistence exists. This preserves separation while keeping domain changes together.
+Persian and English messages are JSON resources under `shared/data/dictionary`, loaded through i18next/react-i18next. Redux preferences own the selected locale and color mode; the application provider synchronizes locale to i18next and the document's `lang` and `dir`. Styled Components receives a theme created from the selected color mode. Keep fixed visible UI text, validation feedback, status text, and accessible labels in both dictionaries.
 
-Legacy Vite App.tsx/App.css/index.css and template assets remain outside the active entry path. Their removal is a separate cleanup; they do not define active styling.
+See the [README](../README.md) for setup and known limitations, and [conventions](conventions.md) for implementation practices.
