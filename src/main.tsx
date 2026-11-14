@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
 import { AppProviders } from "./routes/app-providers";
 import { store } from "./shared/lib/redux/store";
-import "./Shared/styles/typography.css";
+import "./shared/styles/typography.css";
 
 const queryClient = new QueryClient({
 	defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },
