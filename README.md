@@ -93,6 +93,24 @@ Successful Admin product creates appear in the searchable list through its TanSt
 
 Users can be listed and searched, and a create-user form is available. FakeStoreAPI is a demo service: successful POST responses are not durable, so created records are shown temporarily in the current app cache and may disappear after a reload or refetch. Authentication is also a frontend demo and does not secure a production backend.
 
+## Screenshots
+
+Screenshots are in [`docs/screenshots/`](docs/screenshots/).
+
+### Desktop
+
+![NOVA Admin desktop screenshot](docs/screenshots/Macbook-Air-localhost.webp)
+![NOVA Admin desktop screenshot](docs/screenshots/Macbook-Air-localhost%20%281%29.webp)
+![NOVA Admin desktop screenshot](docs/screenshots/Macbook-Air-localhost%20%282%29.webp)
+
+### Mobile
+
+![NOVA Admin mobile screenshot](docs/screenshots/iPhone-15-PRO-localhost.webp)
+![NOVA Admin mobile screenshot](docs/screenshots/iPhone-15-PRO-localhost%20%281%29.webp)
+![NOVA Admin mobile screenshot](docs/screenshots/iPhone-15-PRO-localhost%20%282%29.webp)
+
+![NOVA Admin mobile screenshot](docs/screenshots/iPhone-15-PRO-localhost%20%283%29.webp)
+
 ## Build and verification
 
-Run `bun run build` for the production build. The last recorded Admin build, typecheck, and lint passed on Windows; browser/API acceptance, a clean install, and case-sensitive-host behavior have not been verified. The challenge asks for the actual time spent; that time was not recorded, so it is intentionally not estimated here. No screenshots are included yet.
+Run `bun run build` for the production build. The last recorded Admin build, typecheck, and lint passed on Windows; browser/API acceptance, a clean install, and case-sensitive-host behavior have not been verified. The challenge asks for the actual time spent; that time was not recorded, so it is intentionally not estimated here.
